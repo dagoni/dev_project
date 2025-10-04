@@ -97,12 +97,6 @@ db.url=jdbc:postgresql://127.0.0.1:5432/dev
 db.username=postgres
 db.password=postgres
 
-## Сборка проекта
-mvn clean compile
-
-## Запуск приложения
-mvn exec:java -Dexec.mainClass="ru.rtk.App"
-
 ## Демонстрация работы
 ### При запуске приложение выполняет:
 Подключение к БД и выполнение миграций
