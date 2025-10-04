@@ -1,0 +1,52 @@
+-- Создание таблицы статусов заказов
+CREATE TABLE IF NOT EXISTS order_status (
+    id SERIAL PRIMARY KEY,
+    status_name VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- Создание таблицы продуктов
+CREATE TABLE IF NOT EXISTS product (
+    id SERIAL PRIMARY KEY,
+    description VARCHAR(255) NOT NULL,
+    price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
+    quantity INTEGER NOT NULL CHECK (quantity >= 0),
+    category VARCHAR(100) NOT NULL
+);
+
+COMMENT ON TABLE product IS 'Таблица товаров';
+COMMENT ON COLUMN product.price IS 'Стоимость товара (должна быть >= 0)';
+COMMENT ON COLUMN product.quantity IS 'Количество на складе (должно быть >= 0)';
+
+-- Создание таблицы клиентов
+CREATE TABLE IF NOT EXISTS customer (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    phone VARCHAR(20),
+    email VARCHAR(150) UNIQUE
+);
+
+COMMENT ON TABLE customer IS 'Таблица клиентов';
+
+-- Создание таблицы заказов
+CREATE TABLE IF NOT EXISTS orders (
+    id SERIAL PRIMARY KEY,
+    product_id INTEGER NOT NULL,
+    customer_id INTEGER NOT NULL,
+    order_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    status_id INTEGER NOT NULL,
+    
+    FOREIGN KEY (product_id) REFERENCES product(id),
+    FOREIGN KEY (customer_id) REFERENCES customer(id),
+    FOREIGN KEY (status_id) REFERENCES order_status(id)
+);
+
+COMMENT ON TABLE orders IS 'Таблица заказов';
+COMMENT ON COLUMN orders.quantity IS 'Количество товара в заказе';
+
+-- Создание индексов
+CREATE INDEX IF NOT EXISTS idx_orders_product_id ON orders(product_id);
+CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON orders(customer_id);
+CREATE INDEX IF NOT EXISTS idx_orders_order_date ON orders(order_date);
+CREATE INDEX IF NOT EXISTS idx_orders_status_id ON orders(status_id);
